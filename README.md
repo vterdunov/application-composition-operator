@@ -1,4 +1,9 @@
 # Application Composition Operator (ACO)
+<p align="center">
+  <img src="docs/assets/aco-logo.png" alt="Application Composition Operator" width="280">
+</p>
+
+
 Kubernetes operator that composes resources into an Application.
 
 
