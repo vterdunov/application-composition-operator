@@ -1,0 +1,45 @@
+apiVersion: platform.vterdunov.me/v1alpha1
+kind: Application
+metadata:
+  name: app-two
+spec:
+  image: nginx:1.27-alpine
+  preDeploy: # shoud run k8s Job. Other components must wait until the Job is finished.
+    command: ["/bin/sh","-c","echo Migrating..."]
+  components:
+    - name: api
+      replicas: 2
+      command: ["sleep", "10"] # different componens will be started from the same image with different commans.
+      ports: # optional. will create k8s Service if both containerPort and exposedPort is defined.
+      - containerPort: 4000 # optional. shoud be defined if exposedPort is defined. othwerise - error
+        exposedPort: 80 # optional.shoud be defined if containerPort is defined. othwerise - error
+      metrics: # # optional. default true. will create ServiceMonitor or PodMonitor (if no k8s Service defined)
+        enabled: true
+        port: 4000
+        path: /metrics
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "20Mi"
+        limits:
+          cpu: "100m"
+          memory: "20Mi"
+    - name: worker
+      replicas: 1
+      command: ["sleep", "11"]
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "20Mi"
+        limits:
+          cpu: "100m"
+          memory: "20Mi"
+
+
+
+  # policies:
+  #   network:
+  #     egressAllow:
+  #       - "*.payments.example.com:443"
+  #   security:
+  #     podSecurity: baseline
